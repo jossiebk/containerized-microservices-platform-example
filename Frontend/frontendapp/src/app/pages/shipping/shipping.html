@@ -1,0 +1,26 @@
+<h2>Shipping</h2>
+
+<button (click)="loadShipping()">Load</button>
+
+<ul>
+  <li *ngFor="let s of shippings">
+    {{s.id}} - {{s.city}} - {{s.weight}}
+  </li>
+</ul>
+
+<hr>
+
+<h3>Create Shipping</h3>
+
+<input type="text" [(ngModel)]="city" placeholder="City">
+<input type="number" [(ngModel)]="weight" placeholder="Weight">
+
+<button (click)="createShipping()">Calculate</button>
+
+<hr>
+
+<h3>Shipping Result</h3>
+
+<div *ngIf="shippingResult">
+  <pre>{{ shippingResult | json }}</pre>
+</div>

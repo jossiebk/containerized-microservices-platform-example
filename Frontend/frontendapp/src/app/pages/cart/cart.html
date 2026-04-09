@@ -1,0 +1,26 @@
+<h2>Cart</h2>
+
+<button (click)="loadCart()">Load</button>
+
+<ul>
+  <li *ngFor="let c of cartItems">
+    {{c.id}} - {{c.productName}} - {{c.quantity}}
+  </li>
+</ul>
+
+<hr>
+
+<h3>Add to Cart</h3>
+
+<input type="text" [(ngModel)]="productName" placeholder="Product Name">
+<input type="number" [(ngModel)]="quantity" placeholder="Quantity">
+
+<button (click)="addToCart()">Add</button>
+
+<hr>
+
+<h3>Last Response</h3>
+
+<div *ngIf="lastResponse">
+  <pre>{{ lastResponse | json }}</pre>
+</div>

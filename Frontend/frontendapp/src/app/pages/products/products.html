@@ -1,0 +1,9 @@
+<h2>Products</h2>
+
+<button (click)="loadProducts()">Load</button>
+
+<ul>
+  <li *ngFor="let p of products">
+    {{p.id}} - {{p.name}} - {{p.price}}
+  </li>
+</ul>

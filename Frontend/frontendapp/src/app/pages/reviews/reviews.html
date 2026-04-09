@@ -1,0 +1,28 @@
+<h2>Reviews</h2>
+
+<button (click)="loadReviews()">Load</button>
+
+<ul>
+  <li *ngFor="let r of reviews">
+    {{r.id}} - {{r.productName}} - {{r.userName}} - {{r.rating}} - {{r.comment}}
+  </li>
+</ul>
+
+<hr>
+
+<h3>Create Review</h3>
+
+<input type="text" [(ngModel)]="productName" placeholder="Product Name">
+<input type="text" [(ngModel)]="userName" placeholder="User Name">
+<input type="number" [(ngModel)]="rating" placeholder="Rating">
+<input type="text" [(ngModel)]="comment" placeholder="Comment">
+
+<button (click)="createReview()">Create</button>
+
+<hr>
+
+<h3>Last Response</h3>
+
+<div *ngIf="lastResponse">
+  <pre>{{ lastResponse | json }}</pre>
+</div>

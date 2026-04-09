@@ -1,0 +1,11 @@
+<h2>Inventory</h2>
+
+<button (click)="loadInventory()">Load</button>
+
+<ul>
+  <li *ngFor="let i of inventory">
+    {{i.id}} - {{i.name}} - {{i.stock}}
+  </li>
+</ul>
+
+<hr>
