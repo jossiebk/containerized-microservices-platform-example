@@ -1,0 +1,16 @@
+# Build
+app
+*.exe
+
+# Go
+bin/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
