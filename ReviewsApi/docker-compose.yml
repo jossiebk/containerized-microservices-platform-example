@@ -1,0 +1,20 @@
+services:
+  mongo-db:
+    image: mongo:7
+    container_name: mongo-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+    
+  reviews-api:
+    build: .
+    image: jossie/reviews-api:1.0
+    container_name: reviews-api
+    ports:
+      - "5009:5009"
+    depends_on:
+      - mongo-db
+
+volumes:
+  mongodata:

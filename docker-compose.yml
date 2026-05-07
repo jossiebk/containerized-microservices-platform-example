@@ -1,0 +1,31 @@
+services:
+  postgres-db:
+    image: postgres:16
+    container_name: postgres-db
+    environment:
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: ordersdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  orders-api:
+    build: ./OrdersApi
+    image: jossie/orders-api:1.0
+    container_name: orders-api
+    ports:
+      - "5006:5006"
+    depends_on:
+      - postgres-db
+
+  payments-api:
+    build: ./PaymentsApi
+    image: jossie/payments-api:1.0
+    container_name: payments-api
+    ports:
+      - "5007:5007"
+    depends_on:
+      - postgres-db
+
+volumes:
+  pgdata:
