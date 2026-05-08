@@ -1,0 +1,179 @@
+# ******************* SERVICIOS ******************* 
+services:
+  postgres-db:
+    image: postgres:16
+    container_name: postgres-db
+    environment:
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: ordersdb
+      POSTGRES_USER: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - microservices-network 
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongo-db:
+    image: mongo:7
+    container_name: mongo-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+    networks:
+      - microservices-network
+    healthcheck:
+      test: ["CMD","mongosh","--eval","db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  users-api:
+    build:
+      context: ./UsersApi
+      dockerfile: Dockerfile
+    image: jossie/users-api:1.0
+    container_name: users-api
+    ports:
+      - "5001:5001"
+    environment:
+      ASPNETCORE_URLS: http://+:5001
+      ASPNETCORE_ENVIRONMENT: Development
+    networks:
+      - microservices-network
+  
+  inventory-api:
+    build:
+      context: ./InventoryApi
+      dockerfile: Dockerfile
+    image: jossie/inventory-api:1.0
+    container_name: inventory-api
+    ports: 
+      - "5004:5004"
+    environment:
+      PORT: 5004
+    networks:
+      - microservices-network
+
+  orders-api:
+    build: 
+      context: ./OrdersApi
+      dockerfile: Dockerfile
+    image: jossie/orders-api:1.0
+    container_name: orders-api
+    ports:
+      - "5006:5006"
+    environment:
+      ASPNETCORE_URLS: http://+:5006
+      ASPNETCORE_ENVIRONMENT: Development
+    networks:
+      - microservices-network
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+
+  payments-api:
+    build: 
+      context: ./PaymentsApi
+      dockerfile: Dockerfile
+    image: jossie/payments-api:1.0
+    container_name: payments-api
+    ports:
+      - "5007:5007"
+    environment:
+      SERVER_PORT: 5007
+    networks:
+      - microservices-network
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+
+  products-api:
+    build:
+      context: ./ProductsApi
+      dockerfile: Dockerfile
+    image: jossie/products-api:1.0
+    container_name: products-api
+    ports:
+      - "5002:5002"
+    environment:
+     SERVER_PORT: 5002
+    networks:
+      - microservices-network
+
+  reviews-api:
+    build:
+      context: ./ReviewsApi
+      dockerfile: Dockerfile
+    image: jossie/reviews-api:1.0
+    container_name: reviews-api
+    ports:
+      - "5009:5009"
+    networks:
+      - microservices-network
+    depends_on:
+      mongo-db:
+        condition: service_healthy
+    environment:
+      MONGODB_URL: mongodb://admin:1234@mongo-db:27017
+
+  shipping-api:
+    build:
+     context: ./ShippingApi
+     dockerfile: Dockerfile
+    image: jossie/shipping-api:1.0
+    container_name: shipping-api
+    ports:
+      - "5003:5003"
+    environment:
+      PORT: 5003
+    networks:
+      - microservices-network
+
+  cart-api:
+    build:
+     context: ./CartApi
+     dockerfile: Dockerfile
+    image: jossie/cart-api:1.0
+    container_name: cart-api
+    ports:
+      - "5005:5005"
+    environment:
+      PORT: 5005
+      NODE_ENV: development
+    networks:
+      - microservices-network
+
+  frontend:
+    build:
+     context: ./Frontend/frontendapp
+     dockerfile: Dockerfile
+    image: jossie/frontend-app:1.0
+    container_name: frontend-app
+    ports:
+      - "80:80"
+    networks:
+      - microservices-network
+    depends_on:
+      - users-api
+      - products-api
+      - orders-api
+      - cart-api
+
+# ******************* VOLUMENES ******************* 
+volumes:
+  pgdata:
+    driver: local
+  mongodata:
+    driver: local
+
+# *******************   REDES   ******************* 
+networks:
+  microservices-network:
+    driver: bridge
